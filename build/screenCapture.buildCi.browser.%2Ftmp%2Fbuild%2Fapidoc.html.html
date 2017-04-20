@@ -1,0 +1,363 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/DockYard/ember-composable-helpers">ember-composable-helpers (v2.0.1)</a>
+</h1>
+<h4>Composable helpers for Ember</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.ember-composable-helpers">module ember-composable-helpers</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.ember-composable-helpers.exclusionFilter">
+            function <span class="apidocSignatureSpan">ember-composable-helpers.</span>exclusionFilter
+            <span class="apidocSignatureSpan">(name, regex, lists)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.ember-composable-helpers.filterHelpers">
+            function <span class="apidocSignatureSpan">ember-composable-helpers.</span>filterHelpers
+            <span class="apidocSignatureSpan">(tree, regex)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.ember-composable-helpers.generateBlacklist">
+            function <span class="apidocSignatureSpan">ember-composable-helpers.</span>generateBlacklist
+            <span class="apidocSignatureSpan">(addonConfig)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.ember-composable-helpers.generateWhitelist">
+            function <span class="apidocSignatureSpan">ember-composable-helpers.</span>generateWhitelist
+            <span class="apidocSignatureSpan">(addonConfig)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.ember-composable-helpers.included">
+            function <span class="apidocSignatureSpan">ember-composable-helpers.</span>included
+            <span class="apidocSignatureSpan">(app)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.ember-composable-helpers.treeForAddon">
+            function <span class="apidocSignatureSpan">ember-composable-helpers.</span>treeForAddon
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">string <span class="apidocSignatureSpan">ember-composable-helpers.</span>name</span>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.ember-composable-helpers" id="apidoc.module.ember-composable-helpers">module ember-composable-helpers</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.ember-composable-helpers.exclusionFilter" id="apidoc.element.ember-composable-helpers.exclusionFilter">
+        function <span class="apidocSignatureSpan">ember-composable-helpers.</span>exclusionFilter
+        <span class="apidocSignatureSpan">(name, regex, lists)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">exclusionFilter = function (name, regex, lists) {
+  var whitelist = lists.whitelist || [];
+  var blacklist = lists.blacklist || [];
+  var isAddonHelper = regex.test(name);
+  var helperName = path.basename(name, '.js');
+  var isWhitelisted = whitelist.indexOf(helperName) !== -1;
+  var isBlacklisted = blacklist.indexOf(helperName) !== -1;
+
+  // non-helper, don't exclude
+  if (!isAddonHelper) {
+    return false;
+  }
+
+  // don't exclude if both lists are empty
+  if (whitelist.length === 0 &amp;&amp; blacklist.length === 0) {
+    return false;
+  }
+
+  // don't exclude if both whitelisted and blacklisted
+  if (isWhitelisted &amp;&amp; isBlacklisted) {
+    return false;
+  }
+
+  // only whitelist defined
+  if (whitelist.length &amp;&amp; blacklist.length === 0) {
+    return !isWhitelisted;
+  }
+
+  // only blacklist defined
+  if (blacklist.length &amp;&amp; whitelist.length === 0) {
+    return isBlacklisted;
+  }
+
+  return !isWhitelisted || isBlacklisted;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  // exit early if no opts defined
+  if ((!whitelist || whitelist.length === 0) &amp;&amp; (!blacklist || blacklist.length === 0)) {
+    return new Funnel(tree);
+  }
+
+  return new Funnel(tree, {
+    exclude: [function(name) {
+      return _this.<span class="apidocCodeKeywordSpan">exclusionFilter</span>(name, regex, {
+        whitelist: whitelist,
+        blacklist: blacklist
+      });
+    }]
+  });
+},
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.ember-composable-helpers.filterHelpers" id="apidoc.element.ember-composable-helpers.filterHelpers">
+        function <span class="apidocSignatureSpan">ember-composable-helpers.</span>filterHelpers
+        <span class="apidocSignatureSpan">(tree, regex)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">filterHelpers = function (tree, regex) {
+  var whitelist = this.whitelist;
+  var blacklist = this.blacklist;
+  var _this = this;
+
+  // exit early if no opts defined
+  if ((!whitelist || whitelist.length === 0) &amp;&amp; (!blacklist || blacklist.length === 0)) {
+    return new Funnel(tree);
+  }
+
+  return new Funnel(tree, {
+    exclude: [function(name) {
+      return _this.exclusionFilter(name, regex, {
+        whitelist: whitelist,
+        blacklist: blacklist
+      });
+    }]
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  this.whitelist = this.generateWhitelist(config);
+  this.blacklist = this.generateBlacklist(config);
+},
+
+treeForAddon: function() {
+  // see: https://github.com/ember-cli/ember-cli/issues/4463
+  var tree = this._super.treeForAddon.apply(this, arguments);
+  return this.<span class="apidocCodeKeywordSpan">filterHelpers</span>(tree, new RegExp('^modules\/' + this.name + '
+;\/helpers\/', 'i'));
+},
+
+filterHelpers: function(tree, regex) {
+  var whitelist = this.whitelist;
+  var blacklist = this.blacklist;
+  var _this = this;
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.ember-composable-helpers.generateBlacklist" id="apidoc.element.ember-composable-helpers.generateBlacklist">
+        function <span class="apidocSignatureSpan">ember-composable-helpers.</span>generateBlacklist
+        <span class="apidocSignatureSpan">(addonConfig)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">generateBlacklist = function (addonConfig) {
+  var only = addonConfig.only || [];
+  var except = addonConfig.except || [];
+
+  if (only &amp;&amp; only.length) {
+    return intersection(except, only);
+  }
+
+  return except;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  }
+
+  this.app = app;
+  this.app.options = this.app.options || {};
+
+  var config = this.app.options[this.name] || {};
+  this.whitelist = this.generateWhitelist(config);
+  this.blacklist = this.<span class="apidocCodeKeywordSpan">generateBlacklist</span>(config);
+},
+
+treeForAddon: function() {
+  // see: https://github.com/ember-cli/ember-cli/issues/4463
+  var tree = this._super.treeForAddon.apply(this, arguments);
+  return this.filterHelpers(tree, new RegExp('^modules\/' + this.name + '\/helpers\/', 'i'));
+},
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.ember-composable-helpers.generateWhitelist" id="apidoc.element.ember-composable-helpers.generateWhitelist">
+        function <span class="apidocSignatureSpan">ember-composable-helpers.</span>generateWhitelist
+        <span class="apidocSignatureSpan">(addonConfig)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">generateWhitelist = function (addonConfig) {
+  var only = addonConfig.only || [];
+  var except = addonConfig.except || [];
+
+  if (except &amp;&amp; except.length) {
+    return difference(only, except);
+  }
+
+  return only;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+    app = app.app;
+  }
+
+  this.app = app;
+  this.app.options = this.app.options || {};
+
+  var config = this.app.options[this.name] || {};
+  this.whitelist = this.<span class="apidocCodeKeywordSpan">generateWhitelist</span>(config);
+  this.blacklist = this.generateBlacklist(config);
+},
+
+treeForAddon: function() {
+  // see: https://github.com/ember-cli/ember-cli/issues/4463
+  var tree = this._super.treeForAddon.apply(this, arguments);
+  return this.filterHelpers(tree, new RegExp('^modules\/' + this.name + '\/helpers\/', 'i'));
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.ember-composable-helpers.included" id="apidoc.element.ember-composable-helpers.included">
+        function <span class="apidocSignatureSpan">ember-composable-helpers.</span>included
+        <span class="apidocSignatureSpan">(app)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">included = function (app) {
+  this._super.included.apply(this, arguments);
+
+  // see: https://github.com/ember-cli/ember-cli/issues/3718
+  if (typeof app.import !== 'function' &amp;&amp; app.app) {
+    app = app.app;
+  }
+
+  this.app = app;
+  this.app.options = this.app.options || {};
+
+  var config = this.app.options[this.name] || {};
+  this.whitelist = this.generateWhitelist(config);
+  this.blacklist = this.generateBlacklist(config);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.ember-composable-helpers.treeForAddon" id="apidoc.element.ember-composable-helpers.treeForAddon">
+        function <span class="apidocSignatureSpan">ember-composable-helpers.</span>treeForAddon
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">treeForAddon = function () {
+  // see: https://github.com/ember-cli/ember-cli/issues/4463
+  var tree = this._super.treeForAddon.apply(this, arguments);
+  return this.filterHelpers(tree, new RegExp('^modules\/' + this.name + '\/helpers\/', 'i'));
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
